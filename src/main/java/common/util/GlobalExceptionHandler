@@ -1,0 +1,103 @@
+
+
+package common.exception;
+
+import org.hibernate.validator.internal.util.logging.LoggerFactory;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;common.enums.ResultCodeEnum;
+import common.exception.ClientException;
+import common.exception.CustomParamException;
+import common.exception.DataFactoryException;
+import common.exception.OperatingPlatformException;
+import common.exception.StudioException;
+import common.exception.SystemParamException;
+import common.exception.UserCenterException;
+import common.model.ResultModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+/**
+ * 统一异常处理
+ *
+ * @author wb-yxk397023
+ * @create 2017-08-18-上午9:59
+ */
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+    private static Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    /**
+     * 客户端调用异常处理
+     *
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(ClientException.class)
+    public ResultModel clientExceptionHandler(ClientException e) {
+        logger.error("错误信息：{}", e.getMessage(), e);
+        String code = e.getCode() == null ? ResultCodeEnum.CLIENT_ERROR.getCode() : e.getCode();
+        return ResultModel.fail(code, e.getMessage());
+    }
+
+    /**
+     * 自定义参数异常
+     *
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(CustomParamException.class)
+    public ResultModel customParamExceptHandler(CustomParamException e) {
+        logger.error("错误信息：{}", e.getMessage(), e);
+        return ResultModel.fail(ResultCodeEnum.CUSTOM_PARAM_EXCEPTION, e.getMessage());
+    }
+
+    /**
+     * 系统参数异常
+     *
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(SystemParamException.class)
+    public ResultModel systemParamExceptHandler(SystemParamException e) {
+        logger.error("错误信息：{}", e.getMessage(), e);
+        return ResultModel.fail(ResultCodeEnum.SYSTEM_PARAM_EXCEPTION, e.getMessage());
+    }
+
+    @ExceptionHandler(StudioException.class)
+    public ResultModel StudioExceptionHandler(StudioException e) {
+        logger.error("错误信息：{}", e.getMessage(), e);
+        return ResultModel.fail(ResultCodeEnum.SERVER_OP_ERROR, e.getMessage());
+    }
+
+    @ExceptionHandler(OperatingPlatformException.class)
+    public ResultModel operatingPlatformHandler(OperatingPlatformException e) {
+        logger.error("错误信息：{}", e.getMessage(), e);
+        return ResultModel.fail(ResultCodeEnum.SERVER_OP_ERROR, e.getMessage());
+    }
+
+    @ExceptionHandler(DataFactoryException.class)
+    public ResultModel dataCollectHandler(DataFactoryException e) {
+        logger.error("错误信息：{}", e.getMessage(), e);
+        return ResultModel.fail(ResultCodeEnum.SERVER_BP_ERROR, e.getMessage());
+    }
+
+    @ExceptionHandler(UserCenterException.class)
+    public ResultModel userCenterHandler(Exception e) {
+        logger.error("错误信息：{}", e.getMessage(), e);
+        return ResultModel.fail(ResultCodeEnum.SERVER_UC_ERROR, e.getMessage());
+    }
+
+    /**
+     * 其他未捕获异常处理
+     *
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(Exception.class)
+    public ResultModel otherExceptionHandler(Exception e) {
+        logger.error("服务异常：{}", e.getMessage(), e);
+        return ResultModel.fail(ResultCodeEnum.SERVER_ERROR.getCode(), ResultCodeEnum.SERVER_ERROR.getDesc());
+    }
+}
